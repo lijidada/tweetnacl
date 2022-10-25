@@ -50,11 +50,11 @@ void testHash() {
   List<int> b0 = utf8.encode(m0);
 
   print("\nsha512...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List hash = Hash.sha512(b0);
+  Uint8List? hash = Hash.sha512(Uint8List.fromList(b0));
   print("...sha512@${DateTime.now().millisecondsSinceEpoch}");
 
   String hst = "sha512@$m0/${b0.length}: ";
-  for (int i = 0; i < hash.length; i++) hst += " ${hash[i]}";
+  for (int i = 0; i < hash!.length; i++) hst += " ${hash[i]}";
   print(hst);
 }
 
@@ -63,18 +63,18 @@ void testBoxKalium() {
 
 // explicit nonce
   List<int> theNonce = TweetNaclFast.hexDecode(BOX_NONCE);
-  print("BOX_NONCE: \"${TweetNaclFast.hexEncodeToString(theNonce)}\"");
+  print("BOX_NONCE: \"${TweetNaclFast.hexEncodeToString(Uint8List.fromList(theNonce))}\"");
 
 // keypair A
   List<int> ska = TweetNaclFast.hexDecode(ALICE_PRIVATE_KEY);
-  KeyPair ka = Box.keyPair_fromSecretKey(ska);
+  KeyPair ka = Box.keyPair_fromSecretKey(Uint8List.fromList(ska));
 
   print("ska: \"${TweetNaclFast.hexEncodeToString(ka.secretKey)}\"");
   print("pka: \"${TweetNaclFast.hexEncodeToString(ka.publicKey)}\"");
 
 // keypair B
   List<int> skb = TweetNaclFast.hexDecode(BOB_PRIVATE_KEY);
-  KeyPair kb = Box.keyPair_fromSecretKey(skb);
+  KeyPair kb = Box.keyPair_fromSecretKey(Uint8List.fromList(skb));
 
   print("ska: \"${TweetNaclFast.hexEncodeToString(kb.secretKey)}\"");
   print("pka: \"${TweetNaclFast.hexEncodeToString(kb.publicKey)}\"");
@@ -90,14 +90,14 @@ void testBoxKalium() {
   print("BOX_CIPHERTEXT: \n" + BOX_CIPHERTEXT.toUpperCase());
 
 // cipher A -> B
-  Uint8List cabFast = pabFast.box_nonce(TweetNaclFast.hexDecode(BOX_MESSAGE), theNonce);
-  print("cabFast: \n" + TweetNaclFast.hexEncodeToString(cabFast));
+  Uint8List? cabFast = pabFast.box_nonce(Uint8List.fromList(TweetNaclFast.hexDecode(BOX_MESSAGE)), Uint8List.fromList(theNonce));
+  print("cabFast: \n" + TweetNaclFast.hexEncodeToString(cabFast!));
 
 //!!! TweetNaclFast Box::box/open failed Kalium compatibility !!!
   assert(BOX_CIPHERTEXT.toUpperCase() == TweetNaclFast.hexEncodeToString(cabFast));
 
-  Uint8List mbaFastFast = pbaFast.open_nonce(cabFast, theNonce);
-  print("mbaFastFast: \n" + TweetNaclFast.hexEncodeToString(mbaFastFast));
+  Uint8List? mbaFastFast = pbaFast.open_nonce(cabFast, Uint8List.fromList(theNonce));
+  print("mbaFastFast: \n" + TweetNaclFast.hexEncodeToString(mbaFastFast!));
 
 //!!! TweetNaclFast Box::box/open failed Kalium compatibility !!!
   assert(BOX_MESSAGE.toUpperCase() == TweetNaclFast.hexEncodeToString(mbaFastFast));
@@ -147,15 +147,15 @@ void testBox() {
   String m0 = "Helloword, Am Tom ...";
 
 // cipher A -> B
-  List<int> cab = pab.box(utf8.encode(m0));
+  Uint8List? cab = pab.box(Uint8List.fromList(utf8.encode(m0)));
   String cabt = "";
-  for (int i = 0; i < cab.length; i ++)
+  for (int i = 0; i < cab!.length; i ++)
     cabt += " ${cab[i]}";
   print("cabt: "+cabt);
 
-  Uint8List mba = pba.open(Uint8List.fromList(cab));
+  Uint8List? mba = pba.open(Uint8List.fromList(cab));
   String mbat = "";
-  for (int i = 0; i < mba.length; i ++)
+  for (int i = 0; i < mba!.length; i ++)
     mbat += " ${mba[i]}";
   print("mbat: "+mbat);
 
@@ -181,7 +181,7 @@ void testBoxNonce() {
 
   // explicit nonce
   Uint8List theNonce = TweetNaclFast.makeBoxNonce();
-  Uint8List theNonce3 = TweetNaclFast.hexDecode(TweetNaclFast.hexEncodeToString(theNonce));
+  // List<int> theNonce3 = TweetNaclFast.hexDecode(TweetNaclFast.hexEncodeToString(theNonce));
 //  print("BoxNonce Hex test Equal: " + "\"" + (theNonce == theNonce3) + "\"");
   String theNoncet = "";
   for (int i = 0; i < theNonce.length; i ++)
@@ -231,15 +231,15 @@ void testBoxNonce() {
   String m0 = "Helloword, Am Tom ...";
 
 // cipher A -> B
-  List<int> cab = pab.box_nonce(utf8.encode(m0), theNonce);
+  Uint8List? cab = pab.box_nonce(Uint8List.fromList(utf8.encode(m0)), theNonce);
   String cabt = "";
-  for (int i = 0; i < cab.length; i ++)
+  for (int i = 0; i < cab!.length; i ++)
     cabt += " ${cab[i]}";
   print("cabt: "+cabt);
 
-  Uint8List mba = pba.open_nonce(Uint8List.fromList(cab), theNonce);
+  Uint8List? mba = pba.open_nonce(Uint8List.fromList(cab), theNonce);
   String mbat = "";
-  for (int i = 0; i < mba.length; i ++)
+  for (int i = 0; i < mba!.length; i ++)
     mbat += " ${mba[i]}";
   print("mbat: "+mbat);
 
@@ -248,11 +248,11 @@ void testBoxNonce() {
   assert(nm0 == m0);
 
   // cipher B -> A
-  Uint8List b0 = Uint8List(6);
+  // Uint8List b0 = Uint8List(6);
 
   print("box@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List cba = pba.box_nonce(b0, theNonce);
-  Uint8List mab = pab.open_nonce(cba, theNonce);
+  // Uint8List? cba = pba.box_nonce(b0, theNonce);
+  // Uint8List? mab = pab.open_nonce(cba!, theNonce);
   print("open@${DateTime.now().millisecondsSinceEpoch}");
 //
 //  assertArrayEquals("box/open binary failed (with nonce)", b0, mab);
@@ -287,7 +287,7 @@ void testSecretBox() {
 			System.out.println(mb0t);
 */
     print("secret box ...@${DateTime.now().millisecondsSinceEpoch}");
-    Uint8List cab = pab.box(mb0);
+    Uint8List? cab = pab.box(Uint8List.fromList(mb0));
     print("... secret box@${DateTime.now().millisecondsSinceEpoch}");
 
     /*String cabt = "cab/"+cab.length + ": ";
@@ -296,7 +296,7 @@ void testSecretBox() {
 			System.out.println(cabt);
 */
     print("\nsecret box open ...@${DateTime.now().millisecondsSinceEpoch}");
-    Uint8List mba = pba.open(cab);
+    Uint8List? mba = pba.open(cab!);
     print("... secret box open@${DateTime.now().millisecondsSinceEpoch}");
 
     /*
@@ -306,7 +306,7 @@ void testSecretBox() {
 			System.out.println(mbat);
 */
 
-    String nm0 = utf8.decode(mba);
+    String nm0 = utf8.decode(mba!);
     //secret box/open failed
     assert(nm0 == m0);
   }
@@ -349,7 +349,7 @@ void testSecretBoxNonce() {
 			System.out.println(mb0t);
 */
     print("secret box ...@${DateTime.now().millisecondsSinceEpoch}");
-    Uint8List cab = pab.box_nonce(mb0,theNonce);
+    Uint8List? cab = pab.box_nonce(Uint8List.fromList(mb0), theNonce);
     print("... secret box@${DateTime.now().millisecondsSinceEpoch}");
 
     /*String cabt = "cab/"+cab.length + ": ";
@@ -358,7 +358,7 @@ void testSecretBoxNonce() {
 			System.out.println(cabt);
 */
     print("\nsecret box open ...@${DateTime.now().millisecondsSinceEpoch}");
-    Uint8List mba = pba.open_nonce(cab,theNonce);
+    Uint8List? mba = pba.open_nonce(cab!, theNonce);
     print("... secret box open@${DateTime.now().millisecondsSinceEpoch}");
 
     /*
@@ -368,7 +368,7 @@ void testSecretBoxNonce() {
 			System.out.println(mbat);
 */
 
-    String nm0 = utf8.decode(mba);
+    String nm0 = utf8.decode(mba!);
     //secret box/open failed
     assert(nm0 == m0);
   }
@@ -392,21 +392,21 @@ void testSign() {
 
   // signature A -> B
   print("\nsign...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List sab = pab.sign(utf8.encode(m0));
+  Uint8List? sab = pab.sign(Uint8List.fromList(utf8.encode(m0)));
   print("...sign@${DateTime.now().millisecondsSinceEpoch}");
 
   String sgt = "sign@"+m0 + ": ";
   for (int i = 0; i < Signature.signatureLength; i ++)
-    sgt += " ${sab[i]}";
+    sgt += " ${sab![i]}";
   print(sgt);
 
   print("verify...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List oba = pba.open(sab);
+  Uint8List? oba = pba.open(sab!);
   print("...verify@${DateTime.now().millisecondsSinceEpoch}");
 
   //"verify failed"
   assert(oba != null);
-  String nm0 = utf8.decode(oba);
+  String nm0 = utf8.decode(oba!);
   //"sign failed"
   assert(nm0 == m0);
 
@@ -430,21 +430,21 @@ void testSign() {
   Signature pcc = Signature(kc.publicKey, kc.secretKey);
 
   print("\nself-sign...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List scc = pcc.sign(utf8.encode(m0));
+  Uint8List? scc = pcc.sign(Uint8List.fromList(utf8.encode(m0)));
   print("...self-sign@${DateTime.now().millisecondsSinceEpoch}");
 
   String ssc = "self-sign@"+m0 + ": ";
   for (int i = 0; i < Signature.signatureLength; i ++)
-    ssc += " ${scc[i]}";
+    ssc += " ${scc![i]}";
   print(ssc);
 
   print("self-verify...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List occ = pcc.open(scc);
+  Uint8List? occ = pcc.open(scc!);
   print("...self-verify@${DateTime.now().millisecondsSinceEpoch}");
 
   //"self-verify failed"
   assert(occ != null);
-  nm0 = utf8.decode(occ);
+  nm0 = utf8.decode(occ!);
   //"self-sign failed"
   assert (nm0 == m0);
 }

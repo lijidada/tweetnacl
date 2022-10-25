@@ -6,19 +6,19 @@ void testSignDetached(String seedStr) {
   print("seed:@${DateTime.now().millisecondsSinceEpoch}");
 
   List<int> seed = TweetNaclFast.hexDecode(seedStr);
-  KeyPair kp = Signature.keyPair_fromSeed(seed);
+  KeyPair kp = Signature.keyPair_fromSeed(Uint8List.fromList(seed));
 
   String testString = "test string";
-  Uint8List bytes = utf8.encode(testString);
+  List<int> bytes = utf8.encode(testString);
 
   Signature s1 = Signature(null, kp.secretKey);
   print("\ndetached...@${DateTime.now().millisecondsSinceEpoch}");
-  Uint8List signature = s1.detached(bytes);
+  Uint8List signature = s1.detached(Uint8List.fromList(bytes));
   print("...detached@${DateTime.now().millisecondsSinceEpoch}");
 
   Signature s2 = Signature(kp.publicKey, null);
   print("\nverify...@${DateTime.now().millisecondsSinceEpoch}");
-  bool result = s2.detached_verify(bytes,  signature);
+  bool result = s2.detached_verify(Uint8List.fromList(bytes),  signature);
   print("...verify@${DateTime.now().millisecondsSinceEpoch}");
 
   assert(result == true);
