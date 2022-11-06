@@ -2846,7 +2846,7 @@ class TweetNaclFast{
   }
 
   static void _scalarbase(List<Int64List> p, Uint8List s, final int soff) {
-    List<Int64List> q = List<Int64List>.filled(4, Int64List(16));
+    List<Int64List> q = [Int64List(16), Int64List(16), Int64List(16), Int64List(16)];
 
     _set25519(q[0], _X);
     _set25519(q[1], _Y);
@@ -2857,7 +2857,7 @@ class TweetNaclFast{
 
   static int crypto_sign_keypair(Uint8List pk, Uint8List sk, bool seeded) {
     Uint8List d = Uint8List(64);
-    List<Int64List> p = List<Int64List>.filled(4, Int64List(16));
+    List<Int64List> p = [Int64List(16), Int64List(16), Int64List(16), Int64List(16)];
 
     int i;
 
@@ -2959,7 +2959,7 @@ class TweetNaclFast{
     int i, j;
 
     Int64List x = Int64List(64);
-    List<Int64List> p = List<Int64List>.filled(4, Int64List(16));
+    List<Int64List> p = [Int64List(16), Int64List(16), Int64List(16), Int64List(16)];
 
     crypto_hash_off(d, sk, 0, 32);
     d[0] &= 248;
@@ -3042,8 +3042,8 @@ class TweetNaclFast{
       final int smoff, int /*long*/ n, Uint8List pk) {
     int i;
     Uint8List t = Uint8List(32), h = Uint8List(64);
-    List<Int64List> p = List<Int64List>.filled(4, Int64List(16));
-    List<Int64List> q = List<Int64List>.filled(4, Int64List(16));
+    List<Int64List> p = [Int64List(16), Int64List(16), Int64List(16), Int64List(16)];
+    List<Int64List> q = [Int64List(16), Int64List(16), Int64List(16), Int64List(16)];
 
     ///*mlen = -1;
 
